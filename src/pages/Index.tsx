@@ -1,23 +1,10 @@
-import { useState } from "react";
-import { Student } from "@/types/student";
 import StudentForm from "@/components/StudentForm";
 import StudentTable from "@/components/StudentTable";
+import { useStudents } from "@/hooks/useStudents";
 import { Swords } from "lucide-react";
 
 const Index = () => {
-  const [students, setStudents] = useState<Student[]>([]);
-
-  const handleAddStudent = (studentData: Omit<Student, "id">) => {
-    const newStudent: Student = {
-      ...studentData,
-      id: crypto.randomUUID(),
-    };
-    setStudents((prev) => [newStudent, ...prev]);
-  };
-
-  const handleDeleteStudent = (id: string) => {
-    setStudents((prev) => prev.filter((student) => student.id !== id));
-  };
+  const { students, loading, addStudent, updateStudent, deleteStudent } = useStudents();
 
   return (
     <div className="min-h-screen bg-background">
@@ -42,12 +29,14 @@ const Index = () => {
       <main className="container mx-auto px-4 py-8">
         <div className="space-y-8">
           {/* Formulário de Cadastro */}
-          <StudentForm onAddStudent={handleAddStudent} />
+          <StudentForm onAddStudent={addStudent} />
 
           {/* Tabela de Alunos */}
           <StudentTable
             students={students}
-            onDeleteStudent={handleDeleteStudent}
+            loading={loading}
+            onDeleteStudent={deleteStudent}
+            onUpdateStudent={updateStudent}
           />
         </div>
       </main>

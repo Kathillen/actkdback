@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,16 +10,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { UserPlus, Loader2 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Loader2, Save } from "lucide-react";
 import { Student, BELT_LEVELS, BLOOD_TYPES } from "@/types/student";
 import { useToast } from "@/hooks/use-toast";
 
-interface StudentFormProps {
-  onAddStudent: (student: Omit<Student, "id" | "createdAt" | "updatedAt">) => Promise<any>;
+interface StudentEditDialogProps {
+  student: Student | null;
+  onClose: () => void;
+  onSave: (id: string, data: Partial<Student>) => Promise<void>;
 }
 
-const StudentForm = ({ onAddStudent }: StudentFormProps) => {
+const StudentEditDialog = ({ student, onClose, onSave }: StudentEditDialogProps) => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -32,9 +40,27 @@ const StudentForm = ({ onAddStudent }: StudentFormProps) => {
     phone: "",
     observations: "",
     address: "",
-    enrollmentDate: new Date().toISOString().split("T")[0],
+    enrollmentDate: "",
     monthlyFee: "",
   });
+
+  useEffect(() => {
+    if (student) {
+      setFormData({
+        name: student.name,
+        motherName: student.motherName || "",
+        fatherName: student.fatherName || "",
+        age: student.age.toString(),
+        belt: student.belt,
+        bloodType: student.bloodType || "",
+        phone: student.phone || "",
+        observations: student.observations || "",
+        address: student.address || "",
+        enrollmentDate: student.enrollmentDate,
+        monthlyFee: student.monthlyFee?.toString() || "",
+      });
+    }
+  }, [student]);
 
   const validatePhone = (phone: string) => {
     if (!phone) return true;
@@ -44,6 +70,7 @@ const StudentForm = ({ onAddStudent }: StudentFormProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!student) return;
 
     // Validation
     if (!formData.name.trim()) {
@@ -95,7 +122,7 @@ const StudentForm = ({ onAddStudent }: StudentFormProps) => {
     setLoading(true);
 
     try {
-      const newStudent: Omit<Student, "id" | "createdAt" | "updatedAt"> = {
+      await onSave(student.id, {
         name: formData.name.trim(),
         motherName: formData.motherName.trim(),
         fatherName: formData.fatherName.trim(),
@@ -107,24 +134,8 @@ const StudentForm = ({ onAddStudent }: StudentFormProps) => {
         address: formData.address.trim(),
         enrollmentDate: formData.enrollmentDate,
         monthlyFee: monthlyFeeValue,
-      };
-
-      await onAddStudent(newStudent);
-
-      // Reset form
-      setFormData({
-        name: "",
-        motherName: "",
-        fatherName: "",
-        age: "",
-        belt: "",
-        bloodType: "",
-        phone: "",
-        observations: "",
-        address: "",
-        enrollmentDate: new Date().toISOString().split("T")[0],
-        monthlyFee: "",
       });
+      onClose();
     } catch (error) {
       // Error handled in hook
     } finally {
@@ -133,22 +144,18 @@ const StudentForm = ({ onAddStudent }: StudentFormProps) => {
   };
 
   return (
-    <Card className="border-border/50">
-      <CardHeader className="pb-4">
-        <CardTitle className="flex items-center gap-2 text-lg font-semibold">
-          <UserPlus className="h-5 w-5 text-primary" />
-          Cadastrar Novo Aluno
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
+    <Dialog open={!!student} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Editar Aluno</DialogTitle>
+        </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2">
             {/* Nome Completo */}
-            <div className="space-y-2 sm:col-span-2 lg:col-span-1">
-              <Label htmlFor="name">Nome Completo *</Label>
+            <div className="space-y-2 sm:col-span-2">
+              <Label htmlFor="edit-name">Nome Completo *</Label>
               <Input
-                id="name"
-                placeholder="Digite o nome completo do aluno"
+                id="edit-name"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 disabled={loading}
@@ -157,10 +164,9 @@ const StudentForm = ({ onAddStudent }: StudentFormProps) => {
 
             {/* Nome da Mãe */}
             <div className="space-y-2">
-              <Label htmlFor="motherName">Nome da Mãe</Label>
+              <Label htmlFor="edit-motherName">Nome da Mãe</Label>
               <Input
-                id="motherName"
-                placeholder="Nome completo da mãe"
+                id="edit-motherName"
                 value={formData.motherName}
                 onChange={(e) => setFormData({ ...formData, motherName: e.target.value })}
                 disabled={loading}
@@ -169,10 +175,9 @@ const StudentForm = ({ onAddStudent }: StudentFormProps) => {
 
             {/* Nome do Pai */}
             <div className="space-y-2">
-              <Label htmlFor="fatherName">Nome do Pai</Label>
+              <Label htmlFor="edit-fatherName">Nome do Pai</Label>
               <Input
-                id="fatherName"
-                placeholder="Nome completo do pai"
+                id="edit-fatherName"
                 value={formData.fatherName}
                 onChange={(e) => setFormData({ ...formData, fatherName: e.target.value })}
                 disabled={loading}
@@ -181,13 +186,12 @@ const StudentForm = ({ onAddStudent }: StudentFormProps) => {
 
             {/* Idade */}
             <div className="space-y-2">
-              <Label htmlFor="age">Idade *</Label>
+              <Label htmlFor="edit-age">Idade *</Label>
               <Input
-                id="age"
+                id="edit-age"
                 type="number"
                 min="3"
                 max="100"
-                placeholder="Ex: 25"
                 value={formData.age}
                 onChange={(e) => setFormData({ ...formData, age: e.target.value })}
                 disabled={loading}
@@ -196,14 +200,14 @@ const StudentForm = ({ onAddStudent }: StudentFormProps) => {
 
             {/* Graduação */}
             <div className="space-y-2">
-              <Label htmlFor="belt">Graduação (Faixa) *</Label>
+              <Label htmlFor="edit-belt">Graduação (Faixa) *</Label>
               <Select
                 value={formData.belt}
                 onValueChange={(value) => setFormData({ ...formData, belt: value })}
                 disabled={loading}
               >
-                <SelectTrigger id="belt">
-                  <SelectValue placeholder="Selecione a faixa" />
+                <SelectTrigger id="edit-belt">
+                  <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   {BELT_LEVELS.map((belt) => (
@@ -217,14 +221,14 @@ const StudentForm = ({ onAddStudent }: StudentFormProps) => {
 
             {/* Tipo Sanguíneo */}
             <div className="space-y-2">
-              <Label htmlFor="bloodType">Tipo Sanguíneo</Label>
+              <Label htmlFor="edit-bloodType">Tipo Sanguíneo</Label>
               <Select
                 value={formData.bloodType}
                 onValueChange={(value) => setFormData({ ...formData, bloodType: value })}
                 disabled={loading}
               >
-                <SelectTrigger id="bloodType">
-                  <SelectValue placeholder="Selecione o tipo" />
+                <SelectTrigger id="edit-bloodType">
+                  <SelectValue placeholder="Selecione" />
                 </SelectTrigger>
                 <SelectContent>
                   {BLOOD_TYPES.map((type) => (
@@ -238,11 +242,10 @@ const StudentForm = ({ onAddStudent }: StudentFormProps) => {
 
             {/* Celular */}
             <div className="space-y-2">
-              <Label htmlFor="phone">Número de Celular</Label>
+              <Label htmlFor="edit-phone">Número de Celular</Label>
               <Input
-                id="phone"
+                id="edit-phone"
                 type="tel"
-                placeholder="(00) 00000-0000"
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 disabled={loading}
@@ -251,9 +254,9 @@ const StudentForm = ({ onAddStudent }: StudentFormProps) => {
 
             {/* Data de Matrícula */}
             <div className="space-y-2">
-              <Label htmlFor="enrollmentDate">Aluno Desde *</Label>
+              <Label htmlFor="edit-enrollmentDate">Aluno Desde *</Label>
               <Input
-                id="enrollmentDate"
+                id="edit-enrollmentDate"
                 type="date"
                 value={formData.enrollmentDate}
                 onChange={(e) => setFormData({ ...formData, enrollmentDate: e.target.value })}
@@ -263,13 +266,12 @@ const StudentForm = ({ onAddStudent }: StudentFormProps) => {
 
             {/* Mensalidade */}
             <div className="space-y-2">
-              <Label htmlFor="monthlyFee">Mensalidade (R$)</Label>
+              <Label htmlFor="edit-monthlyFee">Mensalidade (R$)</Label>
               <Input
-                id="monthlyFee"
+                id="edit-monthlyFee"
                 type="number"
                 min="0"
                 step="0.01"
-                placeholder="Ex: 150.00"
                 value={formData.monthlyFee}
                 onChange={(e) => setFormData({ ...formData, monthlyFee: e.target.value })}
                 disabled={loading}
@@ -277,11 +279,10 @@ const StudentForm = ({ onAddStudent }: StudentFormProps) => {
             </div>
 
             {/* Endereço */}
-            <div className="space-y-2 sm:col-span-2 lg:col-span-3">
-              <Label htmlFor="address">Endereço Completo</Label>
+            <div className="space-y-2 sm:col-span-2">
+              <Label htmlFor="edit-address">Endereço Completo</Label>
               <Input
-                id="address"
-                placeholder="Rua, número, bairro, cidade, estado"
+                id="edit-address"
                 value={formData.address}
                 onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                 disabled={loading}
@@ -289,11 +290,10 @@ const StudentForm = ({ onAddStudent }: StudentFormProps) => {
             </div>
 
             {/* Observações */}
-            <div className="space-y-2 sm:col-span-2 lg:col-span-3">
-              <Label htmlFor="observations">Observações</Label>
+            <div className="space-y-2 sm:col-span-2">
+              <Label htmlFor="edit-observations">Observações</Label>
               <Textarea
-                id="observations"
-                placeholder="Informações adicionais sobre o aluno (ex: restrições, medicamentos, etc.)"
+                id="edit-observations"
                 value={formData.observations}
                 rows={3}
                 onChange={(e) => setFormData({ ...formData, observations: e.target.value })}
@@ -302,23 +302,28 @@ const StudentForm = ({ onAddStudent }: StudentFormProps) => {
             </div>
           </div>
 
-          <Button type="submit" className="w-full sm:w-auto" disabled={loading}>
-            {loading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Cadastrando...
-              </>
-            ) : (
-              <>
-                <UserPlus className="mr-2 h-4 w-4" />
-                Cadastrar Aluno
-              </>
-            )}
-          </Button>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={onClose} disabled={loading}>
+              Cancelar
+            </Button>
+            <Button type="submit" disabled={loading}>
+              {loading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Salvando...
+                </>
+              ) : (
+                <>
+                  <Save className="mr-2 h-4 w-4" />
+                  Salvar Alterações
+                </>
+              )}
+            </Button>
+          </DialogFooter>
         </form>
-      </CardContent>
-    </Card>
+      </DialogContent>
+    </Dialog>
   );
 };
 
-export default StudentForm;
+export default StudentEditDialog;

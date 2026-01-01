@@ -1,6 +1,8 @@
 export interface Student {
   id: string;
   name: string;
+  motherName: string;
+  fatherName: string;
   age: number;
   belt: string;
   bloodType: string;
@@ -8,6 +10,9 @@ export interface Student {
   observations: string;
   address: string;
   enrollmentDate: string;
+  monthlyFee: number;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export type BeltLevel = 

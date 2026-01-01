@@ -16,20 +16,24 @@ export interface Student {
 }
 
 export type BeltLevel = 
-  | "Branca"
+  | "Faixa Branca"
+  | "Branca ponta Amarela"
   | "Amarela"
+  | "Amarela ponta Verde"
   | "Verde"
+  | "Verde ponta Azul"
   | "Azul"
-  | "Vermelha"
-  | "Preta";
+  | "Azul ponta Vermelha";
 
 export const BELT_LEVELS: BeltLevel[] = [
-  "Branca",
+  "Faixa Branca",
+  "Branca ponta Amarela",
   "Amarela",
+  "Amarela ponta Verde",
   "Verde",
+  "Verde ponta Azul",
   "Azul",
-  "Vermelha",
-  "Preta",
+  "Azul ponta Vermelha",
 ];
 
 export const BLOOD_TYPES = [

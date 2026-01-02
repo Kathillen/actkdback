@@ -23,7 +23,10 @@ export type BeltLevel =
   | "Verde"
   | "Verde ponta Azul"
   | "Azul"
-  | "Azul ponta Vermelha";
+  | "Azul ponta Vermelha"
+  | "Vermelha"
+  | "Vermelha ponta Preta"
+  | "Preta";
 
 export const BELT_LEVELS: BeltLevel[] = [
   "Faixa Branca",
@@ -34,6 +37,9 @@ export const BELT_LEVELS: BeltLevel[] = [
   "Verde ponta Azul",
   "Azul",
   "Azul ponta Vermelha",
+  "Vermelha",
+  "Vermelha ponta Preta",
+  "Preta",
 ];
 
 export const BLOOD_TYPES = [

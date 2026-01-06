@@ -3,7 +3,7 @@ ALTER TABLE public.students
 ADD CONSTRAINT valid_belt_level CHECK (
   belt IN (
     'Faixa Branca',
-    'Branca ponta Amarela',
+    'Cinza',
     'Amarela',
     'Amarela ponta Verde',
     'Verde',

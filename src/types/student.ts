@@ -17,7 +17,7 @@ export interface Student {
 
 export type BeltLevel = 
   | "Faixa Branca"
-  | "Branca ponta Amarela"
+  | "Cinza"
   | "Amarela"
   | "Amarela ponta Verde"
   | "Verde"
@@ -30,7 +30,7 @@ export type BeltLevel =
 
 export const BELT_LEVELS: BeltLevel[] = [
   "Faixa Branca",
-  "Branca ponta Amarela",
+  "Cinza",
   "Amarela",
   "Amarela ponta Verde",
   "Verde",

@@ -1,6 +1,8 @@
 import db from "../config/db.js";
 
+// =====================
 // GET /students
+// =====================
 export async function getStudents(req, res) {
   try {
     const [rows] = await db.query("SELECT * FROM students");
@@ -11,23 +13,26 @@ export async function getStudents(req, res) {
   }
 }
 
+// =====================
 // POST /students
+// =====================
 export async function createStudent(req, res) {
   console.log("📥 BODY RECEBIDO:", req.body);
 
   try {
+    // 🔁 CONVERSÃO camelCase (front) → snake_case (DB)
     const {
       name,
-      mother_name,
-      father_name,
+      motherName,
+      fatherName,
       age,
       belt,
-      blood_type,
+      bloodType,
       phone,
       observations,
       address,
-      enrollment_date,
-      monthly_fee,
+      enrollmentDate,
+      monthlyFee,
     } = req.body;
 
     const [result] = await db.query(
@@ -36,32 +41,32 @@ export async function createStudent(req, res) {
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         name,
-        mother_name || null,
-        father_name || null,
+        motherName || null,
+        fatherName || null,
         age,
         belt,
-        blood_type || null,
+        bloodType || null,
         phone || null,
         observations || null,
         address || null,
-        enrollment_date,
-        monthly_fee || 0,
+        enrollmentDate,      // ✅ agora NÃO será null
+        monthlyFee ?? 0,
       ]
     );
 
     res.status(201).json({
       id: result.insertId,
       name,
-      mother_name,
-      father_name,
+      motherName,
+      fatherName,
       age,
       belt,
-      blood_type,
+      bloodType,
       phone,
       observations,
       address,
-      enrollment_date,
-      monthly_fee,
+      enrollmentDate,
+      monthlyFee,
     });
   } catch (error) {
     console.error("Erro ao criar aluno:", error);

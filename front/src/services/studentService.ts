@@ -1,6 +1,6 @@
 import { Student } from "@/types/student";
 
-const API_URL = "http://localhost:3000/students";
+const API_URL = "https://actkdback-production.up.railway.app";
 
 export async function createStudent(
   student: Omit<Student, "id" | "createdAt" | "updatedAt">

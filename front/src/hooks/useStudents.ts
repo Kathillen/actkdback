@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { Student } from "@/types/student";
 import { useToast } from "@/hooks/use-toast";
+import { env } from "@/config/env";
 
-const API_URL = "http://localhost:3000";
+const API_URL = env.apiUrl;
 
 export const useStudents = () => {
   const [students, setStudents] = useState<Student[]>([]);
@@ -15,11 +16,16 @@ export const useStudents = () => {
       setLoading(true);
 
       const res = await fetch(`${API_URL}/students`);
-      if (!res.ok) throw new Error("Erro ao buscar alunos");
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(text || "Erro ao buscar alunos");
+      }
 
       const data = await res.json();
       setStudents(data);
     } catch (error: any) {
+      console.error("GET /students error:", error);
+
       toast({
         title: "Erro ao carregar alunos",
         description: error.message,
@@ -35,13 +41,26 @@ export const useStudents = () => {
     student: Omit<Student, "id" | "createdAt" | "updatedAt">
   ) => {
     try {
+      // Enviar apenas os campos que o backend espera
+      const payload = {
+        name: student.name,
+        age: student.age,
+        belt: student.belt,
+        phone: student.phone,
+      };
+
+      console.log("POST /students payload:", payload);
+
       const res = await fetch(`${API_URL}/students`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(student),
+        body: JSON.stringify(payload),
       });
 
-      if (!res.ok) throw new Error("Erro ao cadastrar aluno");
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(text || "Erro ao cadastrar aluno");
+      }
 
       const newStudent = await res.json();
 
@@ -49,11 +68,13 @@ export const useStudents = () => {
 
       toast({
         title: "Aluno cadastrado!",
-        description: `${student.name} foi adicionado com sucesso.`,
+        description: `${newStudent.name} foi adicionado com sucesso.`,
       });
 
       return newStudent;
     } catch (error: any) {
+      console.error("POST /students error:", error);
+
       toast({
         title: "Erro ao cadastrar aluno",
         description: error.message,
@@ -64,15 +85,18 @@ export const useStudents = () => {
   };
 
   // 🔹 PUT /students/:id
-  const updateStudent = async (student: Student) => {
+  const updateStudent = async (id: string, data: Partial<Student>) => {
     try {
-      const res = await fetch(`${API_URL}/students/${student.id}`, {
+      const res = await fetch(`${API_URL}/students/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(student),
+        body: JSON.stringify(data),
       });
 
-      if (!res.ok) throw new Error("Erro ao atualizar aluno");
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(text || "Erro ao atualizar aluno");
+      }
 
       const updated = await res.json();
 
@@ -85,6 +109,8 @@ export const useStudents = () => {
         description: "Os dados foram salvos com sucesso.",
       });
     } catch (error: any) {
+      console.error("PUT /students error:", error);
+
       toast({
         title: "Erro ao atualizar aluno",
         description: error.message,
@@ -101,7 +127,10 @@ export const useStudents = () => {
         method: "DELETE",
       });
 
-      if (!res.ok) throw new Error("Erro ao remover aluno");
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(text || "Erro ao remover aluno");
+      }
 
       setStudents((prev) => prev.filter((s) => s.id !== id));
 
@@ -110,6 +139,8 @@ export const useStudents = () => {
         description: "O aluno foi excluído com sucesso.",
       });
     } catch (error: any) {
+      console.error("DELETE /students error:", error);
+
       toast({
         title: "Erro ao remover aluno",
         description: error.message,

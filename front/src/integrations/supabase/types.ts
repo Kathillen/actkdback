@@ -65,7 +65,7 @@ export type Database = {
         }
         Relationships: []
       }
-      user_roles: {
+      user_rules: {
         Row: {
           created_at: string
           id: string

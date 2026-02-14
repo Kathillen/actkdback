@@ -1,5 +1,6 @@
 import mysql from "mysql2/promise";
 import dotenv from "dotenv";
+import app from "./app.js";
 
 dotenv.config();
 
@@ -16,7 +17,7 @@ const pool = mysql.createPool({
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-  port:Number(process.env.DB_PORT),
+  port: Number(process.env.DB_PORT),
   waitForConnections: true,
   connectionLimit: 10,
 });
@@ -25,16 +26,20 @@ async function startServer() {
   try {
     const connection = await pool.getConnection();
     connection.release();
-    console.log("DB OK");
+    console.log("✅ DB OK");
 
-    app.listen(3000, () => {
-      console.log("Server running");
+    const PORT = process.env.PORT || 3000;
+
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running on port ${PORT}`);
     });
 
   } catch (err) {
-    console.error("DB FAILED", err);
+    console.error("❌ DB FAILED:", err.message);
     process.exit(1);
   }
 }
+
+startServer();
 
 export default pool;

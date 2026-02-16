@@ -41,14 +41,14 @@ export async function createStudent(req, res) {
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         name,
-        mother_name || null,
-        father_name || null,
+        mother_name,
+        father_name,
         age,
         belt,
-        blood_type || null,
-        phone || null,
-        observations || null,
-        address || null,
+        blood_type,
+        phone,
+        observations,
+        address,
         enrollment_date,      // ✅ agora NÃO será null
         monthly_fee ?? 0,
       ]

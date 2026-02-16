@@ -34,6 +34,8 @@ export async function createStudent(req, res) {
       enrollmentDate,
       monthlyFee,
     } = req.body;
+  
+    console.log("'📊 DADOS PREPARADOS PARA DB:",req.body)
 
     const [result] = await db.query(
       `INSERT INTO students

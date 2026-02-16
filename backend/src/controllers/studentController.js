@@ -23,16 +23,16 @@ export async function createStudent(req, res) {
     // 🔁 CONVERSÃO camelCase (front) → snake_case (DB)
     const {
       name,
-      motherName,
-      fatherName,
+      mother_name,
+      father_name,
       age,
       belt,
-      bloodType,
+      blood_type,
       phone,
       observations,
       address,
-      enrollmentDate,
-      monthlyFee,
+      enrollment_date,
+      monthly_fee,
     } = req.body;
 
     const [result] = await db.query(
@@ -41,32 +41,32 @@ export async function createStudent(req, res) {
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         name,
-        motherName || null,
-        fatherName || null,
+        mother_name || null,
+        father_name || null,
         age,
         belt,
-        bloodType || null,
+        blood_type || null,
         phone || null,
         observations || null,
         address || null,
-        enrollmentDate,      // ✅ agora NÃO será null
-        monthlyFee ?? 0,
+        enrollment_date,      // ✅ agora NÃO será null
+        monthly_fee ?? 0,
       ]
     );
 
     res.status(201).json({
       id: result.insertId,
       name,
-      motherName,
-      fatherName,
+      mother_name,
+      father_name,
       age,
       belt,
-      bloodType,
+      blood_type,
       phone,
       observations,
       address,
-      enrollmentDate,
-      monthlyFee,
+      enrollment_date,
+      monthly_fee,
     });
   } catch (error) {
     console.error("Erro ao criar aluno:", error);

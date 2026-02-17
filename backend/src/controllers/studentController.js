@@ -6,7 +6,22 @@ import db from "../config/db.js";
 export async function getStudents(req, res) {
   try {
     const [rows] = await db.query("SELECT * FROM students");
-    res.json(rows);
+
+    const students =  rows.map((row) => ({
+      id: row.id,
+      name: row.name,
+      motherName: row.mother_name, 
+      fatherName: row.father_name,
+      age: row.age,
+      belt: row.belt,
+      bloodType: row.blood_type,
+      phone: row.phone,
+      observations: row.observations,
+      address: row.address,
+      enrollmentDate: row.enrollment_date,
+      monthlyFee: row.monthly_fee,
+    }))
+    res.json(students);
   } catch (error) {
     console.error("Erro ao buscar alunos:", error);
     res.status(500).json({ error: "Erro ao buscar alunos" });
@@ -35,7 +50,7 @@ export async function createStudent(req, res) {
       monthlyFee,
     } = req.body;
   
-    console.log("'📊 DADOS PREPARADOS PARA DB:",req.body)
+    console.log("📊 DADOS PREPARADOS PARA DB:",req.body)
 
     const [result] = await db.query(
       `INSERT INTO students

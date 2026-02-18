@@ -2,11 +2,15 @@ import express from "express";
 import {
   getStudents,
   createStudent,
+  updateStudent,
+  deleteStudent
 } from "../controllers/studentController.js";
 
 const router = express.Router();
 
-router.get("/", getStudents);
-router.post("/", createStudent);
+router.get("/students", getStudents); // buscar aluno
+router.post("/students", createStudent); // criar aluno
+router.put("/students/:id", updateStudent); // atualizar
+router.delete("/students/:id", deleteStudent); // deletar aluno
 
 export default router;

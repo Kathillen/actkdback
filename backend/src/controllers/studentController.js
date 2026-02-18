@@ -90,3 +90,72 @@ export async function createStudent(req, res) {
     res.status(500).json({ error: "Erro ao criar aluno" });
   }
 }
+
+//atualizar alunos
+
+export async function updateStudent(req, res){
+  const {id} = req.params;
+  const {
+    name,
+    motherName,
+    fatherName,
+    age,
+    belt,
+    bloodType,
+    phone,
+    observations,
+    address,
+    enrollmentDate,
+    monthlyFee,
+  } = req.body;
+
+  try {
+    const [result] = await db.query(
+      `UPDADTE students SET
+      name = ?,
+      mother_name = ?,
+      father_name = ?, 
+      age = ?,
+      belt = ?,
+      blood_type = ?,
+      phone = ?,
+      observations = ?,
+      address = ?,
+      enrollment_date = ?,
+      monthly_fee = ?
+      WHERE id =?`,
+      [
+        name,
+        motherName || null,
+        fatherName || null,
+        age,
+        belt,
+        bloodType || null,
+        phone || null,
+        observations || null,
+        address || null,
+        enrollmentDate,      
+        monthlyFee ?? 0,
+        id
+      ]
+    )
+    res.json({ message: "✅ Aluno atualizado com sucesso!" });
+  } catch (error){
+    console.error("Erro ao atualizar aluno:", error);
+    res.status(500).json({ error: "Erro ao atualizar aluno" });
+  }
+}
+
+// deletar alunos
+
+export async function deleteStudent(req, res){
+  const {id} = req.param;
+
+  try{
+    await db.query("DELETE FROM students WHERE id = ?", [id]);
+    res.json({ message: "✅ Aluno deletado com sucesso!" });
+  } catch (error){
+    console.log("❌ Erro ao deletar aluno:", error)
+    res.status(500).json({ error: "Erro ao deletar aluno"})
+  }
+}

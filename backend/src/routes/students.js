@@ -8,9 +8,9 @@ import {
 
 const router = express.Router();
 
-router.get("/students", getStudents); // buscar aluno
-router.post("/students", createStudent); // criar aluno
-router.put("/students/:id", updateStudent); // atualizar
-router.delete("/students/:id", deleteStudent); // deletar aluno
+router.get("/", getStudents); // buscar aluno
+router.post("/", createStudent); // criar aluno
+router.put("/:id", updateStudent); // atualizar
+router.delete("/:id", deleteStudent); // deletar aluno
 
 export default router;

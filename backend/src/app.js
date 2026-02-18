@@ -1,12 +1,6 @@
 import express from "express";
 import studentsRoutes from "./routes/students.js";
 import cors from "cors";
-import { // importando as funções do controller
-    getStudents,
-    createStudent,
-    updateStudent,
-    deleteStudent
-} from "./controllers/studentController.js";
 
 const app = express();
 

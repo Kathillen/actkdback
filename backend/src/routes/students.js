@@ -6,6 +6,8 @@ import {
   deleteStudent
 } from "../controllers/studentController.js";
 
+console.log("📦 Students routes carregadas");
+
 const router = express.Router();
 
 router.get("/", getStudents); // buscar aluno

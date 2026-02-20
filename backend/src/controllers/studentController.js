@@ -170,7 +170,7 @@ export async function updateStudent(req, res){
 // deletar alunos
 
 export async function deleteStudent(req, res){
-  const {id} = req.paramS;
+  const {id} = req.params;
 
   try{
     await db.query("DELETE FROM students WHERE id = ?", [id]);

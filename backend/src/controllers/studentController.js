@@ -28,6 +28,27 @@ export async function getStudents(req, res) {
   }
 }
 
+//GET buscar estudantes pelo ID
+
+export const getStudentById = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const [rows] = await pool.query(
+      "SELECT * FROM students WHERE id = ?",
+      [id]
+    );
+
+    if(rows.length === 0){
+      return res.status(404).json({ message: "❌ALUNO NÃO ENCONTRADO"})
+    };
+
+    res.json(rows[0]);
+  } catch (error){
+    console.log("❌ Erro ao buscar aluno por ID:", error);
+    res.status(500).json({ message: "❌Erro ao buscar aluno por ID"})
+  }
+};
 // =====================
 // POST /students
 // =====================

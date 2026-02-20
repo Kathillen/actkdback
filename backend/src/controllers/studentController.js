@@ -132,7 +132,7 @@ export async function updateStudent(req, res){
 
   try {
     const [result] = await db.query(
-      `UPDADTE students SET
+      `UPDATE students SET
       name = ?,
       mother_name = ?,
       father_name = ?, 

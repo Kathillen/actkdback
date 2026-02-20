@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 3000;
 export async function startServer() {
   try {
     const connection = await pool.getConnection();
-    connection.realease();
+    connection.release();
     console.log("✅ DB OK");
     
     app.listen(PORT, () => {
